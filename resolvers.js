@@ -1,4 +1,5 @@
 import getDB from "./utils/DBconn.js"
+import jwt from 'jsonwebtoken'
 
 export const resolvers = {
     Query: {
@@ -6,8 +7,12 @@ export const resolvers = {
             try {
                 const db = await getDB()
                 const collection = db.collection("admin")
-                const users = await collection.findOne(args?.data)
-                return users
+                const user = await collection.findOne(args?.data)
+                if (user) {
+                    const token = jwt.sign(args?.data, 'appToken')
+                    user.token = token;
+                }
+                return user
 
             } catch (ex) {
                 console.error(ex);
