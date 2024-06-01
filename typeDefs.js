@@ -13,7 +13,7 @@ type Vendor{
     role:String
 }
 type Query{
-   loginAdmin(data:User):JSON
+   login(data:User):JSON
    getVendors:[Vendor]
 }
 

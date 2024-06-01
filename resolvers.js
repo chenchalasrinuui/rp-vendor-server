@@ -3,10 +3,10 @@ import jwt from 'jsonwebtoken'
 
 export const resolvers = {
     Query: {
-        loginAdmin: async (parent, args, context, info) => {
+        login: async (parent, args, context, info) => {
             try {
                 const db = await getDB()
-                const collection = db.collection("admin")
+                const collection = db.collection(args?.data?.role)
                 const user = await collection.findOne(args?.data)
                 if (user) {
                     const token = jwt.sign(args?.data, 'appToken')
