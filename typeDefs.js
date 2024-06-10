@@ -5,10 +5,9 @@ export const typeDefs = `
 input User{
     uid:String
     password:String
-    role:String
     phone:String
-    email:String
     address:String
+    role:String
 }
 type Vendor{
     uid:String
@@ -17,6 +16,7 @@ type Vendor{
     phone:String
     email:String
     address:String
+    _id:String
 }
 type Query{
    login(data:User):JSON
@@ -25,6 +25,8 @@ type Query{
 
 type Mutation{
     registerVendor(data:User):JSON
+    updateVendor(data:User,id:String):JSON
+    deleteVendor(id:String):JSON
 }
 
 `
