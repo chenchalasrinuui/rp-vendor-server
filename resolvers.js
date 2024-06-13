@@ -7,7 +7,9 @@ export const resolvers = {
             try {
                 const db = await getDB()
                 const collection = db.collection(args?.data?.role)
+
                 const user = await collection.findOne(args?.data)
+                console.log(1, user)
                 if (user) {
                     const token = jwt.sign(args?.data, 'appToken')
                     user.token = token;
@@ -25,7 +27,7 @@ export const resolvers = {
         getVendors: async (parent, args, context, info) => {
             try {
                 const db = await getDB();
-                const collection = db.collection("vendors")
+                const collection = db.collection("vendor")
                 const result = await collection.find().toArray();
                 return result;
             } catch (ex) {
@@ -38,8 +40,12 @@ export const resolvers = {
         registerVendor: async (parent, args, context, info) => {
             try {
                 const db = await getDB();
-                const collection = db.collection("vendors")
-                const result = await collection.insertOne(args?.data)
+                const collection = db.collection("vendor")
+                let data = args.data
+                if (!data.role) {
+                    data = { ...data, role: "vendor" }
+                }
+                const result = await collection.insertOne(data)
                 return result;
             } catch (ex) {
                 console.error(ex);
@@ -49,7 +55,7 @@ export const resolvers = {
         updateVendor: async (parent, args, context, info) => {
             try {
                 const db = await getDB();
-                const collection = db.collection("vendors")
+                const collection = db.collection("vendor")
                 const result = await collection.updateOne({ _id: ObjectId.createFromHexString(args.id) }, { $set: args.data })
                 return result;
             } catch (ex) {
@@ -60,7 +66,7 @@ export const resolvers = {
         deleteVendor: async (parent, args, context, info) => {
             try {
                 const db = await getDB();
-                const collection = db.collection("vendors")
+                const collection = db.collection("vendor")
                 const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(args.id) })
                 return result;
             } catch (ex) {
