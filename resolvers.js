@@ -34,6 +34,16 @@ export const resolvers = {
                 console.error(ex)
                 return ex.message
             }
+        },
+        getProducts: async () => {
+            try {
+                const db = await getDB()
+                const collection = db.collection("products")
+                const result = await collection.find({}).toArray()
+                return result;
+            } catch (ex) {
+
+            }
         }
     },
     Mutation: {
@@ -73,6 +83,53 @@ export const resolvers = {
                 console.error(ex);
                 return ex.message;
             }
+        },
+        saveProduct: async (parent, args, context, info) => {
+            try {
+                const db = await getDB();
+                const collection = db.collection("products")
+                const result = await collection.insertOne(args.data)
+                return result;
+            } catch (ex) {
+                console.error(ex);
+                return ex.message
+            }
+        },
+        updateProduct: async (parent, args, context, info) => {
+            try {
+                const { data, id } = args;
+                const db = await getDB();
+                const collection = db.collection("products")
+                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: data })
+                return result;
+            } catch (ex) {
+                console.error(ex);
+                return ex;
+            }
+        },
+        deleteProduct: async (parent, args, context, info) => {
+            try {
+                const db = await getDB()
+                const collection = db.collection("products")
+                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(args.id) })
+                return result;
+            } catch (ex) {
+                console.error(ex.message);
+                return ex.message;
+            }
+        },
+        changePassword: async (parent, args, context, info) => {
+            try {
+                const { password, id } = args;
+                const db = await getDB()
+                const collection = db.collection('vendor')
+                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { password: password } })
+                return result;
+            } catch (ex) {
+                console.error(ex.message);
+                return ex.message
+            }
+
         }
 
     }
