@@ -1,7 +1,17 @@
 import getDB from "./utils/DBconn.js"
 import jwt from 'jsonwebtoken'
 import { ObjectId } from "mongodb"
+import { GraphQLUpload } from 'graphql-upload'
+import fs from 'fs'
+import { finished } from 'stream/promises'
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 export const resolvers = {
+    Upload: GraphQLUpload,
     Query: {
         login: async (parent, args, context, info) => {
             try {
@@ -84,16 +94,18 @@ export const resolvers = {
                 return ex.message;
             }
         },
-        saveProduct: async (parent, args, context, info) => {
-            try {
-                const db = await getDB();
-                const collection = db.collection("products")
-                const result = await collection.insertOne(args.data)
-                return result;
-            } catch (ex) {
-                console.error(ex);
-                return ex.message
-            }
+        saveProduct: async (parent, { file, data }, context, info) => {
+            const { createReadStream, filename, mimetype, encoding } = await file;
+            const productName = `${data?.name}.${filename?.split('.')?.pop()}`
+            const stream = createReadStream();
+            const outPath = path.join(__dirname, `/uploads/${data?.uid}_${productName}`);
+            const out = fs.createWriteStream(outPath);
+            stream.pipe(out);
+            await finished(out);
+            //const db = await getDB();
+            // const collection = db.collection("products")
+            // const result = await collection.insertOne({ ...data, path: `/uploads/${data?.uid}_${productName}` })
+            return result;
         },
         updateProduct: async (parent, args, context, info) => {
             try {
