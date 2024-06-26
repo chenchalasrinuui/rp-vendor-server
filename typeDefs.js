@@ -11,6 +11,11 @@ input User{
     address:String
     role:String
 }
+input loginInput{
+    uid:String
+    password:String
+    role:String
+}
 input ProductInput{
     uid:String
     name:String
@@ -34,7 +39,7 @@ type Product{
     _id:String
 }
 type Query{
-   login(data:User):JSON
+   login(data:loginInput):JSON
    getVendors:[Vendor]
    getProducts:[Product]
 }
@@ -43,7 +48,7 @@ type Mutation{
     registerVendor(data:User):JSON
     updateVendor(data:User,id:String):JSON
     deleteVendor(id:String):JSON
-    saveProduct(file: Upload!):JSON
+    saveProduct(file: Upload,product:ProductInput ):JSON
     updateProduct(data:ProductInput,id:String):JSON
     deleteProduct(id:String):JSON
     changePassword(password:String,id:String):JSON

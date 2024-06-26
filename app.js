@@ -4,9 +4,11 @@ import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 import { graphqlUploadExpress } from 'graphql-upload'
 import cors from 'cors'
+import path from 'path'
 
 const app = express();
 app.use(cors())
+app.use("/uploads", express.static('uploads'));
 app.use(graphqlUploadExpress());
 const server = new ApolloServer({ typeDefs, resolvers })
 

@@ -94,18 +94,18 @@ export const resolvers = {
                 return ex.message;
             }
         },
-        saveProduct: async (parent, { file, data }, context, info) => {
+        saveProduct: async (parent, { file, product }, context, info) => {
             const { createReadStream, filename, mimetype, encoding } = await file;
-            const productName = `${data?.name}.${filename?.split('.')?.pop()}`
+            const productName = `${product?.name}.${filename?.split('.')?.pop()}`
             const stream = createReadStream();
-            const outPath = path.join(__dirname, `/uploads/${data?.uid}_${productName}`);
+            const outPath = path.join(__dirname, `/uploads/${product?.uid}_${productName}`);
             const out = fs.createWriteStream(outPath);
             stream.pipe(out);
             await finished(out);
-            //const db = await getDB();
-            // const collection = db.collection("products")
-            // const result = await collection.insertOne({ ...data, path: `/uploads/${data?.uid}_${productName}` })
-            return result;
+            const db = await getDB();
+            const collection = db.collection("products")
+            const result = await collection.insertOne({ ...product, path: `/uploads/${product?.uid}_${productName}` })
+            return result
         },
         updateProduct: async (parent, args, context, info) => {
             try {
