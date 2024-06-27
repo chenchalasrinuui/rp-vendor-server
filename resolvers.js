@@ -96,9 +96,9 @@ export const resolvers = {
         },
         saveProduct: async (parent, { file, product }, context, info) => {
             const { createReadStream, filename, mimetype, encoding } = await file;
-            const productName = `${product?.name}.${filename?.split('.')?.pop()}`
+            const productName = `${product?.uid}_${product?.name}.${filename?.split('.')?.pop()}`
             const stream = createReadStream();
-            const outPath = path.join(__dirname, `/uploads/${product?.uid}_${productName}`);
+            const outPath = path.join(__dirname, `/uploads/${productName}`);
             const out = fs.createWriteStream(outPath);
             stream.pipe(out);
             await finished(out);
