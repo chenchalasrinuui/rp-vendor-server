@@ -41,7 +41,7 @@ type Product{
 type Query{
    login(data:loginInput):JSON
    getVendors:[Vendor]
-   getProducts:[Product]
+   getProducts(id:String):[Product]
 }
 
 type Mutation{
@@ -49,7 +49,7 @@ type Mutation{
     updateVendor(data:User,id:String):JSON
     deleteVendor(id:String):JSON
     saveProduct(file: Upload,product:ProductInput ):JSON
-    updateProduct(data:ProductInput,id:String):JSON
+    updateProduct(file:Upload!,data:ProductInput,id:String):JSON
     deleteProduct(id:String):JSON
     changePassword(password:String,id:String):JSON
 }

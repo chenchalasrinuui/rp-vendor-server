@@ -45,11 +45,11 @@ export const resolvers = {
                 return ex.message
             }
         },
-        getProducts: async () => {
+        getProducts: async (parent, args, context, info) => {
             try {
                 const db = await getDB()
                 const collection = db.collection("products")
-                const result = await collection.find({}).toArray()
+                const result = await collection.find({ uid: args.id }).toArray()
                 return result;
             } catch (ex) {
 
@@ -104,20 +104,21 @@ export const resolvers = {
             await finished(out);
             const db = await getDB();
             const collection = db.collection("products")
-            const result = await collection.insertOne({ ...product, path: `/uploads/${product?.uid}_${productName}` })
+            const result = await collection.insertOne({ ...product, path: `/uploads/${productName}` })
             return result
         },
-        updateProduct: async (parent, args, context, info) => {
-            try {
-                const { data, id } = args;
-                const db = await getDB();
-                const collection = db.collection("products")
-                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: data })
-                return result;
-            } catch (ex) {
-                console.error(ex);
-                return ex;
-            }
+        updateProduct: async (parent, { file, data, id }, context, info) => {
+            console.log(file, data, id);
+            // try {
+            //     const { data, id } = args;
+            //     const db = await getDB();
+            //     const collection = db.collection("products")
+            //     const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: data })
+            //     return result;
+            // } catch (ex) {
+            //     console.error(ex);
+            //     return ex;
+            // }
         },
         deleteProduct: async (parent, args, context, info) => {
             try {
