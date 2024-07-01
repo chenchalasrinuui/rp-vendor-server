@@ -9,7 +9,7 @@ import path from 'path'
 const app = express();
 app.use(cors())
 app.use("/uploads", express.static('uploads'));
-app.use(graphqlUploadExpress());
+app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 const server = new ApolloServer({ typeDefs, resolvers })
 
 await server.start()
