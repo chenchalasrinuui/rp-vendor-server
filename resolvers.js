@@ -8,6 +8,7 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 export const resolvers = {
@@ -96,7 +97,7 @@ export const resolvers = {
         },
         saveProduct: async (parent, { file, product }, context, info) => {
             const { createReadStream, filename } = await file;
-            const productName = `${product?.uid}_${product?.name}.${filename?.split('.')?.pop()}`
+            const productName = `${product?.uid}_${new Date().getTime()}.${filename?.split('.')?.pop()}`
             const stream = createReadStream();
             const outPath = path.join(__dirname, `/uploads/${productName}`);
             const out = fs.createWriteStream(outPath);
@@ -104,13 +105,13 @@ export const resolvers = {
             await finished(out);
             const db = await getDB();
             const collection = db.collection("products")
-            const result = await collection.insertOne({ ...product, path: `/uploads/${productName}` })
+            const result = await collection.insertOne({ ...product, timeStamp: new Date().getTime(), path: `/uploads/${productName}` })
             return result
         },
-        updateProduct: async (parent, { file, data, id }, context, info) => {
+        updateProduct: async (parent, { file, data, updateProductId }, context, info) => {
             try {
                 if (file) {
-                    const { createReadStream, filename } = await file;
+                    const { createReadStream } = await file;
                     const productName = `${data?.path?.split('/')?.pop()}`
                     const stream = createReadStream();
                     const outPath = path.join(__dirname, `/uploads/${productName}`);
@@ -120,18 +121,20 @@ export const resolvers = {
                 }
                 const db = await getDB();
                 const collection = db.collection("products")
-                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: data })
+                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(updateProductId) }, { $set: { ...data, timeStamp: new Date().getTime() } })
                 return result;
             } catch (ex) {
                 console.error(ex);
                 return ex;
             }
         },
-        deleteProduct: async (parent, args, context, info) => {
+        deleteProduct: async (parent, { id, pathName }, context, info) => {
             try {
+                const filePath = path.join(__dirname, pathName);
+                fs.unlink(filePath, () => { });
                 const db = await getDB()
                 const collection = db.collection("products")
-                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(args.id) })
+                const result = await collection.deleteOne({ _id: ObjectId.createFromHexString(id) })
                 return result;
             } catch (ex) {
                 console.error(ex.message);
