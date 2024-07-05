@@ -141,13 +141,21 @@ export const resolvers = {
                 return ex.message;
             }
         },
-        changePassword: async (parent, args, context, info) => {
+        changePassword: async (parent, { currPwd, newPwd, id }, context, info) => {
             try {
-                const { password, id } = args;
+
                 const db = await getDB()
                 const collection = db.collection('vendor')
-                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { password: password } })
-                return result;
+                const user = await collection.find({ _id: ObjectId.createFromHexString(id), password: currPwd }).toArray()
+                if (user.length > 0) {
+                    const result = await collection.updateOne({ _id: ObjectId.createFromHexString(id) }, { $set: { password: newPwd } })
+                    return result;
+                }
+                return {
+                    "acknowledged": true,
+                    "modifiedCount": 0,
+                }
+
             } catch (ex) {
                 console.error(ex.message);
                 return ex.message

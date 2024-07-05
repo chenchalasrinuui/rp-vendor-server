@@ -51,7 +51,7 @@ type Mutation{
     saveProduct(file: Upload,product:ProductInput ):JSON
     updateProduct(file:Upload,data:ProductInput,updateProductId:String):JSON
     deleteProduct(id:String,pathName:String):JSON
-    changePassword(password:String,id:String):JSON
+    changePassword(currPwd:String,newPwd:String,id:String):JSON
 }
 
 `
