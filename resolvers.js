@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 import path, { dirname } from 'path';
 
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 export const resolvers = {
@@ -63,6 +62,11 @@ export const resolvers = {
                 const db = await getDB();
                 const collection = db.collection("vendor")
                 let data = args.data
+                const res = await collection.find({ uid: data.uid }).toArray()
+                if (res.length > 0) {
+                    throw new Error("user already existed")
+                }
+
                 if (!data.role) {
                     data = { ...data, role: "vendor" }
                 }
@@ -77,7 +81,8 @@ export const resolvers = {
             try {
                 const db = await getDB();
                 const collection = db.collection("vendor")
-                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(args.id) }, { $set: args.data })
+                const data = args.data
+                const result = await collection.updateOne({ _id: ObjectId.createFromHexString(args.id) }, { $set: data })
                 return result;
             } catch (ex) {
                 console.error(ex);
