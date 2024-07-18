@@ -4,12 +4,15 @@ import { ApolloServer } from 'apollo-server-express'
 import express from 'express'
 import { graphqlUploadExpress } from 'graphql-upload'
 import cors from 'cors'
-import path from 'path'
 
 const app = express();
 app.use(cors())
+
 app.use("/uploads", express.static('uploads'));
+
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+
+
 const server = new ApolloServer({ typeDefs, resolvers })
 
 await server.start()
